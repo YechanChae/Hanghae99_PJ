@@ -9,5 +9,5 @@ router.get("/", (req, res) => {
 app.use("/api", express.json(), router);
 
 app.listen(8080, () => {
-  console.log("서버가 켜졌어요!");
+  console.log("서버가 켜졌어요!하하하하하하");
 });
