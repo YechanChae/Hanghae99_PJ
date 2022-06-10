@@ -1,5 +1,5 @@
 const express = require("express");
-
+// mongoose 패키지
 const app = express();
 const router = express.Router();
 
