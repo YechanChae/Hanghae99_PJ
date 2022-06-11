@@ -19,7 +19,9 @@ const boardsSchema = new mongoose.Schema({
     imgUrl : {
         type: String,
     }
-})
+    },
+    { timestamps: true }
+)
 
 module.exports = mongoose.model("Boards", boardsSchema);
 
