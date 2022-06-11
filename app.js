@@ -6,19 +6,27 @@ const Joi = require("joi");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
-require("dotenv").config();
+const upload = multer({ dest: 'uploads/'});
 
-mongoose.connect("mongodb://localhost/hanghae99_week4HW", {
+require("dotenv").config();
+const BoardsRouter = require("./routes/boards");
+
+
+mongoose.connect("mongodb://localhost/MiniProject", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 
-router.get("/", (req, res) => {
+
+app.use("/api", express.json(), router);
+app.use("/api", BoardsRouter);
+
+app.get("/", (req, res) => {
   res.send("Hi!");
 });
-app.use("/api", express.json(), router);
+
 
 app.listen(8080, () => {
   console.log("서버가 켜졌어어요.");
