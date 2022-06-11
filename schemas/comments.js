@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema({
     boardId: {
-        type: String,
+        type: Number,
+        required: true,
+    },
+    commentId: {
+        type: Number,
         required: true,
         unique: true,
     },
@@ -14,6 +18,7 @@ const commentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-});
+}, { timestamps: true }
+);
 
 module.exports = mongoose.model("Comment", commentSchema);
