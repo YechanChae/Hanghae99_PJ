@@ -40,9 +40,9 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
         if (correctPassword) {
             const userName = user.name
             const token = jwt.sign({ userId: user.userId }, "whi-secret-key")
-            console.log( userId, userName )
+            console.log( userName )
             res.send({
-                token, userId, userName
+                token, userName
             })
         } else {
             res.status(400).send({
@@ -75,19 +75,6 @@ router.post("/check/userId", async (req, res)=> {
             errorMessage: "이메일 형식이 아닙니다."
         })
     }
-    // const { userId } = await checkIdSchema.validateAsync(req.body);
-    // const checkId = await User.findOne({ userId }).exec()
-    // if (checkId) {
-    //     res.status(400).send({
-    //         success: false,
-    //         msg: "이미 존재하는 이메일입니다."
-    //     })
-    //     return
-    // } else {
-    //     res.status(200).send({
-    //         success: true,
-    //     })
-    // }
 })
 
 //이름 중복확인
@@ -112,19 +99,6 @@ router.post("/check/name", async (req, res)=> {
             errorMessage: "3~30자의 영문, 숫자만 사용 가능합니다."
         })        
     }
-    // const { name } = req.body
-    // const checkName = await User.findOne({ name }).exec()
-    // if (checkName) {
-    //     res.status(400).send({
-    //         success: false,
-    //         msg: "이미 존재하는 이름입니다."
-    //     })
-    //     return
-    // } else {
-    //     res.status(200).send({
-    //         success: true,
-    //     })
-    // }
 })
 
 
