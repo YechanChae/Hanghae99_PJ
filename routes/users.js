@@ -24,32 +24,38 @@ const checkNameSchema = Joi.object({
 
 //로그인
 router.post("/login", async (req, res)=> {       //post메서드로 하는 이유는 로그인할 때 마다 마다 토큰을 생성하기때문
-    const { userId, password } = req.body
+    try {
+        const { userId, password } = req.body
 
-    const user = await User.findOne({ userId }).exec()
+        const user = await User.findOne({ userId }).exec()
 
-    if (!user) {
-        res.status(400).send({
-            errorMessage: "이메일 또는 패스워드를 확인해주세요1."
-        })
-        return
-    } else {
-        const correctPassword = bcrypt.compareSync(password, user.password)     //boolean이라 true,false 반환
-        console.log(correctPassword)
-        if (correctPassword) {
-            const userName = user.name
-            const token = jwt.sign({ userId: user.userId }, "whi-secret-key")
-            console.log( userName )
-            res.send({
-                token, userName
-            })
-        } else {
+        if (!user) {
             res.status(400).send({
-                errorMessage: "이메일 또는 패스워드를 확인해주세요2."
+                errorMessage: "이메일 또는 패스워드를 확인해주세요1."
             })
+            return
+        } else {
+            const correctPassword = bcrypt.compareSync(password, user.password)     //boolean이라 true,false 반환
+            console.log(correctPassword)
+            if (correctPassword) {
+                const userName = user.name
+                const token = jwt.sign({ userId: user.userId }, "whi-secret-key")
+                console.log( userName )
+                res.send({
+                    token, userName
+                })
+            } else {
+                res.status(400).send({
+                    errorMessage: "이메일 또는 패스워드를 확인해주세요2."
+                })
+            }
         }
+    } catch (err) {
+        console.log(err);
+        res.status(400).send({
+            errorMessage: "올바은 형식이 아닙니다."
+        })
     }
-    
 })
 
 //이메일 중복확인
