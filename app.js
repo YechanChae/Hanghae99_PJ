@@ -10,6 +10,7 @@ const multer = require("multer");
 require("dotenv").config();
 const User = require("./schemas/users");
 const usersRouter = require("./routes/users");
+const boardsRouter = require("./routes/boards");
 
 mongoose.connect("mongodb://localhost/hanghae99_week4HW", {
   useNewUrlParser: true,
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
   res.send("Hi!");
 });
 
+app.use(cors());
 app.use("/api", express.json(), usersRouter);
 
 app.listen(8080, () => {
