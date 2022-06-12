@@ -13,9 +13,10 @@ module.exports = (req, res, next) => {
     }
 
     try {
-        const { userId } = jwt.verify(authToken, "project-key");
-        User.findOne(userId).then((user) => {
+        const { userId } = jwt.verify(authToken, "whi-secret-key");
+        User.findOne({ userId }).then((user) => {
             res.locals.user = user;
+            next();
         });
     } catch (err) {
         res.status(401).send({

@@ -3,7 +3,7 @@ const Comment = require("../schemas/comments");
 const authMiddleWare = require('../middlewares/auth');
 const router = express.Router();
 
-// 댓글 조회 (초안)
+// 댓글 조회
 router.get('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
     const boardId = req.params.boardId;
 
@@ -11,7 +11,7 @@ router.get('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
     res.json({ comments: comments });
 })
 
-// 댓글 작성 (초안)
+// 댓글 작성
 router.post('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
     const user = res.locals.user;
     const boardId = req.params.boardId;
@@ -27,28 +27,28 @@ router.post('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
     res.json({ success: true });
 })
 
-// 댓글 수정 (초안)
+// 댓글 수정
 router.put('/boards/:boardId/comments/:commentId', authMiddleWare, async (req, res) => {
     const user = res.locals.user;
     const commentId = req.params.commentId;
     const { comment } = req.body;
 
-    const item = Comment.find({ commentId: Number(commentId) });
-    if (user.name === item[0].name) {
-        await Comment.updateOne({ commentId: Number(commentId) }, { $set: { comment } });
+    const item = await Comment.findOne({ commentId });
+    if (user.name === item.name) {
+        await Comment.updateOne({ commentId }, { $set: { comment } });
     }
 
     res.json({ success: true });
 })
 
-// 댓글 삭제 (초안)
+// 댓글 삭제
 router.delete('/boards/:boardId/comments/:commentId', authMiddleWare, async (req, res) => {
     const user = res.locals.user;
     const commentId = req.params.commentId;
 
-    const item = Comment.find({ commentId: Number(commentId) });
-    if (user.name === item[0].name) {
-        await Comment.deleteOne({ commentId: Number(commentId) });
+    const item = await Comment.findOne({ commentId });
+    if (user.name === item.name) {
+        await Comment.deleteOne({ commentId });
     }
 
     res.json({ success: true });
