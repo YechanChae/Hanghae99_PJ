@@ -5,14 +5,14 @@ const router = express.Router();
 //게시글 생성(로그인시 가능)
 router.post('/boards', async (req, res) => {
     try {
-        const maxBoardsId = await Boards.findOne().sort("-boardsId").exec()
-        let boardsId = 1
-        if (maxBoardsId) {
-            boardsId = maxBoardsId.boardsId+1
+        const maxBoardId = await Boards.findOne().sort("-boardId").exec()
+        let boardId = 1
+        if (maxBoardId) {
+            boardId = maxBoardId.boardId+1
         }
 
         const createdBoards = await Boards.create({
-            boardsId: boardsId,
+            boardId: boardId,
             name: req.body.name,
             title: req.body.title,
             content: req.body.title
@@ -45,5 +45,30 @@ router.get('/boards/:boardId', async (req, res) => {
     res.json({detail});
 });
 
+//게시글 수정(로그인 필요)
 
+router.put('/boards/:boardId', async (req, res) => {
+    const { boardId } = req.params;
+    const { title, content } = req.body;
+
+    const isIdInBoard = await Boards.find({ boardId });
+    if ( isIdInBoard.length > 0) {
+        await Boards.updateOne(
+            { boardId: Number(boardId)}, 
+            { $set: { title, content } }
+        );
+    }
+    res.send({ success: true });
+});
+
+//게시글 삭제(로그인 필요)
+router.delete('/boards/:boardId', async (req, res) => {
+    const {boardId} = req.params;
+    
+    const isIdInBoard = await Boards.find({ boardId });
+    if (isIdInBoard.length > 0) {
+        await Boards.deleteOne({ boardId});
+    }
+    res.send({ success: true });
+});
 module.exports = router;
