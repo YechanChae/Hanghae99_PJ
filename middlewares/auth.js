@@ -11,10 +11,8 @@ module.exports = (req, res, next) => {
             errorMessage: "로그인이 필요한 기능입니다.",
         })
         return;
-    }
-
-
-    try {
+        }
+     
         const { userId } = jwt.verify(authToken, process.env.TOKEN_KEY);
         User.findOne({ userId }).then((user) => {
             res.locals.user = user;

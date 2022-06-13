@@ -1,9 +1,5 @@
 const express = require("express");
 const app = express();
-const router = express.Router();
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const Joi = require("joi");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
