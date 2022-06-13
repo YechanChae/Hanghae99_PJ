@@ -8,6 +8,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 require("dotenv").config();
+const port = process.env.PORT || 3000;
 
 const commentRouter = require("./routes/comments");
 const BoardsRouter = require("./routes/boards");
@@ -28,7 +29,7 @@ app.get("/", (req, res) => {
   res.send("Hi!");
 });
 
-app.listen(8080, () => {
+app.listen(port, () => {
   console.log("서버가 켜졌어어요.");
 });
 
