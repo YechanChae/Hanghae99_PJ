@@ -54,6 +54,8 @@ router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
 
         const { user } = res.locals;
         const list = await Boards.findOne({ boardId });
+        console.log(user.name)
+        console.log(list.name)
         if ( user.name !== list.name) {
             await res.send({
                 msg: "본인만 수정 가능합니다."
