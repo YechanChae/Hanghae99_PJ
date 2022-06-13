@@ -40,13 +40,13 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
             const correctPassword = bcrypt.compareSync(password, user.password)     //boolean이라 true,false 반환
             console.log(correctPassword)
             if (correctPassword) {
-                const userName = user.name
+                const name = user.name
                 const token = jwt.sign({ userId: user.userId }, "whi-secret-key")
                 console.log( userName )
                 res.send({
                     success: true,
                     token, 
-                    userName
+                    name
                 })
             } else {
                 res.status(400).send({
