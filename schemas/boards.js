@@ -18,10 +18,13 @@ const boardsSchema = new mongoose.Schema({
     },
     imgUrl : {
         type: String,
+    },
+    likes: {
+        type: Array,
+        default: [],
     }
     },
     { timestamps: true }
 )
 
-module.exports = mongoose.model("Boards", boardsSchema);
-
+module.exports = mongoose.model("Board", boardsSchema);
