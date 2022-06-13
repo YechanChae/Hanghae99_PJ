@@ -3,7 +3,7 @@ const User = require("../schemas/users");
 const bcrypt = require("bcrypt");
 const Joi = require("joi");
 const jwt = require('jsonwebtoken');
-const authMiddleware = require("./auth-middleware");
+const authMiddleWare = require('../middlewares/auth');
 
 // 회원가입 검증하기
 const postUserSchema = Joi.object({
@@ -54,7 +54,7 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
     } catch (err) {
         console.log(err);
         res.status(400).send({
-            errorMessage: "올바은 형식이 아닙니다."
+            errorMessage: "올바른 형식이 아닙니다."
         })
     }
 })
@@ -168,7 +168,7 @@ router.post("/users", async (req, res) => {
 
 // 회원정보 인증
 
-router.get('/users/me', authMiddleware, async function (req, res) {
+router.get('/users/me', authMiddleWare, async function (req, res) {
     const { user } = res.locals;
     res.send({
         user: {

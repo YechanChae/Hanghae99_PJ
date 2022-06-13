@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
         const { userId } = jwt.verify(authToken, "whi-secret-key");
         User.findOne({ userId }).then((user) => {
             res.locals.user = user;
-            next();
+            next(); 
         });
     } catch (err) {
         res.status(401).send({
