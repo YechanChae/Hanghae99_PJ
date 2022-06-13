@@ -8,6 +8,9 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
 require("dotenv").config();
+const User = require("./schemas/users");
+const usersRouter = require("./routes/users");
+const boardsRouter = require("./routes/boards");
 
 const usersRouter = require("./routes/users");
 
@@ -21,6 +24,8 @@ db.on("error", console.error.bind(console, "connection error:"));
 app.get("/", (req, res) => {
   res.send("Hi!");
 });
+
+app.use(cors());
 
 app.use("/api", express.json(), usersRouter);
 

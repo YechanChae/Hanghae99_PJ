@@ -12,6 +12,7 @@ const postUserSchema = Joi.object({
     password: Joi.string().min(4).required(),
     confirmPassword: Joi.string().min(4).required(),
 });
+
 //이메일 중복체크 검증하기
 const checkIdSchema = Joi.object({
     userId: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] }}).required()
@@ -164,7 +165,9 @@ router.post("/users", async (req, res) => {
     }
 });
 
-// 회원정보 조회
+
+// 회원정보 인증
+
 router.get('/users/me', authMiddleware, async function (req, res) {
     const { user } = res.locals;
     res.send({
@@ -174,23 +177,8 @@ router.get('/users/me', authMiddleware, async function (req, res) {
     });
 });
 
-// 회원정보 수정
-router.put('/users/me', authMiddleware, async (req, res) => {
-    try {
-
-
-    } catch (err) {
-        return res.status(500).json(err);
-    }
-});
-
-// 회원정보 삭제
-router.delete('/users/me', authMiddleware, async (req, res) => {
-    try {
-
-    } catch (err) {
-        
-    }
-});
 
 module.exports = router;
+
+
+
