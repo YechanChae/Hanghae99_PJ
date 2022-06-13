@@ -32,6 +32,7 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
 
         if (!user) {
             res.status(400).send({
+                success: false,
                 errorMessage: "이메일 또는 패스워드를 확인해주세요1."
             })
             return
@@ -39,14 +40,19 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
             const correctPassword = bcrypt.compareSync(password, user.password)     //boolean이라 true,false 반환
             console.log(correctPassword)
             if (correctPassword) {
-                const userName = user.name
+
+                const name = user.name
                 const token = jwt.sign({ userId: user.userId }, process.env.TOKEN_KEY)
+
                 console.log( userName )
                 res.send({
-                    token, userName
+                    success: true,
+                    token, 
+                    name
                 })
             } else {
                 res.status(400).send({
+                    success: false,
                     errorMessage: "이메일 또는 패스워드를 확인해주세요2."
                 })
             }
@@ -102,7 +108,7 @@ router.post("/check/name", async (req, res)=> {
     } catch (err) {
         console.log(err)
         res.status(400).send({
-            errorMessage: "3~30자의 영문, 숫자만 사용 가능합니다."
+            errorMessage: "2~8자의 한글, 영문, 숫자만 사용 가능합니다."
         })        
     }
 })
