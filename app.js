@@ -12,6 +12,8 @@ const User = require("./schemas/users");
 const usersRouter = require("./routes/users");
 const boardsRouter = require("./routes/boards");
 
+const usersRouter = require("./routes/users");
+
 mongoose.connect("mongodb://localhost/hanghae99_week4HW", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -24,6 +26,7 @@ app.get("/", (req, res) => {
 });
 
 app.use(cors());
+
 app.use("/api", express.json(), usersRouter);
 
 app.listen(8080, () => {
