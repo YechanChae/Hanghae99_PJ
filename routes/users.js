@@ -40,7 +40,7 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
             console.log(correctPassword)
             if (correctPassword) {
                 const userName = user.name
-                const token = jwt.sign({ userId: user.userId }, "whi-secret-key")
+                const token = jwt.sign({ userId: user.userId }, process.env.TOKEN_KEY)
                 console.log( userName )
                 res.send({
                     token, userName
