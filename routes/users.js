@@ -8,7 +8,7 @@ const authMiddleWare = require('../middlewares/auth');
 // 회원가입 검증하기
 const postUserSchema = Joi.object({
     userId: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] }}).required(),
-    name: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+    name: Joi.string().pattern(new RegExp('^[ㄱ-ㅎ가-힣a-zA-Z0-9]{2,8}$')).required(),
     password: Joi.string().min(4).required(),
     confirmPassword: Joi.string().min(4).required(),
 });
@@ -19,7 +19,7 @@ const checkIdSchema = Joi.object({
 })
 //이름 중복체크 검증하기
 const checkNameSchema = Joi.object({
-    name: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
+    name: Joi.string().pattern(new RegExp('^[ㄱ-ㅎ가-힣a-zA-Z0-9]{2,8}$')).required()
 })
 
 
@@ -32,6 +32,7 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
 
         if (!user) {
             res.status(400).send({
+                success: false,
                 errorMessage: "이메일 또는 패스워드를 확인해주세요1."
             })
             return
@@ -43,10 +44,13 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
                 const token = jwt.sign({ userId: user.userId }, "whi-secret-key")
                 console.log( userName )
                 res.send({
-                    token, userName
+                    success: true,
+                    token, 
+                    userName
                 })
             } else {
                 res.status(400).send({
+                    success: false,
                     errorMessage: "이메일 또는 패스워드를 확인해주세요2."
                 })
             }
@@ -102,7 +106,7 @@ router.post("/check/name", async (req, res)=> {
     } catch (err) {
         console.log(err)
         res.status(400).send({
-            errorMessage: "3~30자의 영문, 숫자만 사용 가능합니다."
+            errorMessage: "2~8자의 한글, 영문, 숫자만 사용 가능합니다."
         })        
     }
 })
