@@ -5,8 +5,6 @@ const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const multer = require("multer");
-const upload = multer({ dest: 'uploads/'});
 
 require("dotenv").config();
 const BoardsRouter = require("./routes/boards");

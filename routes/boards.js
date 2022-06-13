@@ -1,6 +1,9 @@
 const express = require("express")
 const Boards = require("../schemas/boards");
 const router = express.Router();
+const multer = require("multer");
+const upload = multer({ dest: 'uploads/'});
+
 
 //게시글 생성(로그인시 가능)
 router.post('/boards', async (req, res) => {
@@ -15,7 +18,7 @@ router.post('/boards', async (req, res) => {
             boardId: boardId,
             name: req.body.name,
             title: req.body.title,
-            content: req.body.title
+            content: req.body.content
         });
 
             res.json({ boards : createdBoards});  
@@ -67,7 +70,7 @@ router.delete('/boards/:boardId', async (req, res) => {
     
     const isIdInBoard = await Boards.find({ boardId });
     if (isIdInBoard.length > 0) {
-        await Boards.deleteOne({ boardId});
+        await Boards.deleteOne({ boardId });
     }
     res.send({ success: true });
 });
