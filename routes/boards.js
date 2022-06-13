@@ -16,13 +16,13 @@ router.post('/boards', authMiddleWare, async (req, res) => {
             boardId: boardId,
             name: name,
             title: req.body.title,
-            content: req.body.title
+            content: req.body.content
         });
 
             res.json({ boards : createdBoards});  
     } catch (err) {
         res.status(400).send({
-            errorMessage: "게시글 작성 오류"
+            msg: "게시글 작성 오류"
         })
     }
 });
@@ -56,7 +56,7 @@ router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
         const list = await Boards.findOne({ boardId });
         if ( user.name !== list.name) {
             await res.send({
-                errorMessage: "본인만 수정이 가능합니다."
+                msg: "본인만 수정 가능합니다."
             })
             return;
         }
@@ -74,7 +74,7 @@ router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
 
     } catch (err) {
         res.json(400).send({
-            errorMessage: "게시글 수정 오류"
+            msg: "게시글 수정 오류"
         })
     }
    
@@ -90,7 +90,7 @@ router.delete('/boards/:boardId', authMiddleWare, async (req, res) => {
          console.log(list.name)
          if ( user.name !== list.name) {
              await res.send({
-                 errorMessage: "본인만 수정이 가능합니다."
+                 msg: "본인만 수정 가능합니다."
              })
              return;
          }
@@ -104,7 +104,7 @@ router.delete('/boards/:boardId', authMiddleWare, async (req, res) => {
 
         } catch (err) {
             res.json(400).send({
-                errorMessage: "게시글 삭제 오류"
+                msg: "게시글 삭제 오류"
             })
         }
        

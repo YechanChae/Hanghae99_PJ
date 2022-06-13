@@ -20,7 +20,7 @@ router.post('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
        
         if (!comment) {     // 댓글 내용이 없을 경우
             res.status(400).send({
-                errorMessage: "댓글 내용을 입력해주세요."
+                msg: "댓글 내용을 입력해주세요."
             })
             return;
         }
@@ -40,7 +40,7 @@ router.post('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
         res.json({ comments : CreateComments });
     } catch (err) {
         res.status(400).send({
-            errorMessage: "댓글 작성 오류"
+            msg: "댓글 작성 오류"
         })
     }
 })

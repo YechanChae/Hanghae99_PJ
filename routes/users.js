@@ -97,13 +97,13 @@ router.post("/check/name", async (req, res)=> {
         if (checkName) {
             res.status(400).send({
                 success: false,
-                msg: "이미 존재하는 이름 입니다."
+                msg: "이미 존재하는 닉네임 입니다."
             })
             return
         } else {
             res.status(200).send({
                 success: true,
-                msg: "사용 가능한 이름 입니다."
+                msg: "사용 가능한 닉네임 입니다."
             })
         }
     } catch (err) {
@@ -126,7 +126,7 @@ router.post("/users", async (req, res) => {
         // 패스워드에 name 포함여부 확인
         if (password.includes(name)) {
             res.status(400).send({
-                msg: "비밀번호에 이름이 포함되어있습니다."
+                msg: "비밀번호에 닉네임이 포함되어있습니다."
             })
             return;
         }
@@ -152,7 +152,7 @@ router.post("/users", async (req, res) => {
         const existName = await User.find({name});
         if (existName.length) {
             res.status(400).send({
-                msg: "이미 존재하는 이름입니다.",
+                msg: "이미 존재하는 닉네임입니다.",
             })
             return;
         };
@@ -162,7 +162,7 @@ router.post("/users", async (req, res) => {
         await user.save();
         res.status(201).send({
             success: true,
-            msg: "회원가입성공"
+            msg: "회원가입을 환영합니다!"
         });
     } catch (err) {
         console.log(err);
