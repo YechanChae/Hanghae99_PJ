@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../schemas/users");
 
 module.exports = (req, res, next) => {
+    try {
     const { authorization } = req.headers;
     const [authType, authToken] = authorization.split(" ");
 
@@ -12,7 +13,6 @@ module.exports = (req, res, next) => {
         return;
     }
 
-    try {
         const { userId } = jwt.verify(authToken, "whi-secret-key");
         User.findOne({ userId }).then((user) => {
             res.locals.user = user;
