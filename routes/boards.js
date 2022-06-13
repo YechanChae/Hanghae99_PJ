@@ -42,24 +42,42 @@ router.get('/boards/:boardId', authMiddleWare, async (req, res) => {
     const { boardId } = req.params;
 
     const [detail] = await Boards.find({ boardId: Number(boardId) }) 
-    console.log(detail)
     res.json({detail});
 });
 
 //게시글 수정(로그인 필요)
 
 router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
-    const { boardId } = req.params;
-    const { title, content } = req.body;
+    try {
+        const { boardId } = req.params;
+        const { title, content } = req.body;
 
-    const isIdInBoard = await Boards.find({ boardId });
-    if ( isIdInBoard.length > 0) {
-        await Boards.updateOne(
-            { boardId: Number(boardId)}, 
-            { $set: { title, content } }
-        );
+        const { user } = res.locals;
+        const list = await Boards.findOne({ boardId });
+        if ( user.name !== list.name) {
+            await res.send({
+                errorMessage: "본인만 수정이 가능합니다."
+            })
+            return;
+        }
+
+        const isIdInBoard = await Boards.find({ boardId });
+        if ( isIdInBoard.length > 0) {
+            await Boards.updateOne(
+                { boardId: Number(boardId)}, 
+                { $set: { title, content } }
+            )
+            res.send({ success: true });
+            return;
+        } 
+    
+
+    } catch (err) {
+        res.json(400).send({
+            errorMessage: "게시글 수정 오류"
+        })
     }
-    res.send({ success: true });
+   
 });
 
 //게시글 삭제(로그인 필요)
