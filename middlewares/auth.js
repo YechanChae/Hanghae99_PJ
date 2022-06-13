@@ -13,7 +13,9 @@ module.exports = (req, res, next) => {
         return;
     }
 
-        const { userId } = jwt.verify(authToken, "whi-secret-key");
+
+    try {
+        const { userId } = jwt.verify(authToken, process.env.TOKEN_KEY);
         User.findOne({ userId }).then((user) => {
             res.locals.user = user;
             next(); 

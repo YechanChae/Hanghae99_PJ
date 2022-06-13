@@ -8,7 +8,7 @@ const authMiddleWare = require('../middlewares/auth');
 // 회원가입 검증하기
 const postUserSchema = Joi.object({
     userId: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] }}).required(),
-    name: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+    name: Joi.string().pattern(new RegExp('^[ㄱ-ㅎ가-힣a-zA-Z0-9]{2,8}$')).required(),
     password: Joi.string().min(4).required(),
     confirmPassword: Joi.string().min(4).required(),
 });
@@ -19,7 +19,7 @@ const checkIdSchema = Joi.object({
 })
 //이름 중복체크 검증하기
 const checkNameSchema = Joi.object({
-    name: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
+    name: Joi.string().pattern(new RegExp('^[ㄱ-ㅎ가-힣a-zA-Z0-9]{2,8}$')).required()
 })
 
 
@@ -32,29 +32,34 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
 
         if (!user) {
             res.status(400).send({
-                errorMessage: "이메일 또는 패스워드를 확인해주세요1."
+                success: false,
+                msg: "이메일 또는 패스워드를 확인해주세요."
             })
             return
         } else {
             const correctPassword = bcrypt.compareSync(password, user.password)     //boolean이라 true,false 반환
             console.log(correctPassword)
             if (correctPassword) {
-                const userName = user.name
-                const token = jwt.sign({ userId: user.userId }, "whi-secret-key")
-                console.log( userName )
+
+                const name = user.name
+                const token = jwt.sign({ userId: user.userId }, process.env.TOKEN_KEY)
+
                 res.send({
-                    token, userName
+                    success: true,
+                    token, 
+                    name
                 })
             } else {
                 res.status(400).send({
-                    errorMessage: "이메일 또는 패스워드를 확인해주세요2."
+                    success: false,
+                    msg: "이메일 또는 패스워드를 확인해주세요."
                 })
             }
         }
     } catch (err) {
         console.log(err);
         res.status(400).send({
-            errorMessage: "올바른 형식이 아닙니다."
+            msg: "올바른 형식이 아닙니다."
         })
     }
 })
@@ -67,18 +72,19 @@ router.post("/check/userId", async (req, res)=> {
         if (checkId) {
             res.status(400).send({
                 success: false,
-                msg: "이미 존재하는 이메일입니다."
+                msg: "이미 존재하는 이메일 입니다."
             })
             return
         } else {
             res.status(200).send({
                 success: true,
+                msg: "사용 가능한 이메일 입니다."
             })
         }
     } catch (err) {
         console.log(err)
         res.status(400).send({
-            errorMessage: "이메일 형식이 아닙니다."
+            msg: "이메일 형식이 아닙니다."
         })
     }
 })
@@ -91,18 +97,19 @@ router.post("/check/name", async (req, res)=> {
         if (checkName) {
             res.status(400).send({
                 success: false,
-                msg: "이미 존재하는 이름입니다."
+                msg: "이미 존재하는 이름 입니다."
             })
             return
         } else {
             res.status(200).send({
                 success: true,
+                msg: "사용 가능한 이름 입니다."
             })
         }
     } catch (err) {
         console.log(err)
         res.status(400).send({
-            errorMessage: "3~30자의 영문, 숫자만 사용 가능합니다."
+            msg: "2~8자의 한글, 영문, 숫자만 사용 가능합니다."
         })        
     }
 })
@@ -119,7 +126,7 @@ router.post("/users", async (req, res) => {
         // 패스워드에 name 포함여부 확인
         if (password.includes(name)) {
             res.status(400).send({
-                errorMessage: "비밀번호에 이름이 포함되어있습니다."
+                msg: "비밀번호에 이름이 포함되어있습니다."
             })
             return;
         }
@@ -127,7 +134,7 @@ router.post("/users", async (req, res) => {
         // 패스워드와 패스워드 확인란 동일 여부 확인
         if (password !== confirmPassword) {
             res.status(400).send({
-                errorMessage: "패스워드가 패스워드 확인란과 동일하지 않습니다.",
+                msg: "패스워드가 패스워드 확인란과 동일하지 않습니다.",
             })
             return;
         }
@@ -136,7 +143,7 @@ router.post("/users", async (req, res) => {
         const existUserId = await User.find({userId});
         if (existUserId.length) {
             res.status(400).send({
-                errorMessage: "이미 존재하는 이메일입니다.",
+                msg: "이미 존재하는 이메일입니다.",
             })
             return;
         };
@@ -145,7 +152,7 @@ router.post("/users", async (req, res) => {
         const existName = await User.find({name});
         if (existName.length) {
             res.status(400).send({
-                errorMessage: "이미 존재하는 이름입니다.",
+                msg: "이미 존재하는 이름입니다.",
             })
             return;
         };
@@ -160,7 +167,7 @@ router.post("/users", async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(400).send({
-            errorMessage: "입력한 정보를 다시 확인해주세요.",
+            msg: "입력한 정보를 다시 확인해주세요.",
         });
     }
 });
