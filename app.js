@@ -13,7 +13,7 @@ const commentRouter = require("./routes/comments");
 const BoardsRouter = require("./routes/boards");
 const usersRouter = require("./routes/users");
 
-mongoose.connect("mongodb+srv://test:sparta@cluster0.9liuw.mongodb.net/?retryWrites=true&w=majority", {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
