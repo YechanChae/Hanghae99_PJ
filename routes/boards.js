@@ -16,7 +16,7 @@ router.post('/boards', authMiddleWare, async (req, res) => {
             boardId: boardId,
             name: name,
             title: req.body.title,
-            content: req.body.title
+            content: req.body.content
         });
 
             res.json({ boards : createdBoards});  
