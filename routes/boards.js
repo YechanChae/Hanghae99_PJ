@@ -1,11 +1,7 @@
 const express = require("express")
 const Boards = require("../schemas/boards");
 const router = express.Router();
-
-const multer = require("multer");
-const upload = multer({ dest: 'uploads/'});
 const authMiddleWare = require('../middlewares/auth');
-
 
 //게시글 생성(로그인시 가능)
 router.post('/boards', authMiddleWare, async (req, res) => {
@@ -20,7 +16,7 @@ router.post('/boards', authMiddleWare, async (req, res) => {
             boardId: boardId,
             name: name,
             title: req.body.title,
-            content: req.body.content
+            content: req.body.title
         });
 
             res.json({ boards : createdBoards});  
@@ -85,7 +81,6 @@ router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
 });
 
 //게시글 삭제(로그인 필요)
-
 router.delete('/boards/:boardId', authMiddleWare, async (req, res) => {
     try {
          const {boardId} = req.params;
@@ -138,7 +133,6 @@ router.put('/boards/:boardId/like', authMiddleWare, async (req, res) => {
         }
     } catch(err) {
         res.status(500).json(err);
-      
     }
 });
 
