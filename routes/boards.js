@@ -6,26 +6,27 @@ const { upload } = require('../middlewares/upload')
 
 // 사진업로드 (1개씩 저장)
 
-router.post('/image', upload.single('imgUrl'), async (req, res) => {
-    const file = await req.file;
-    console.log(file);
-    try {
-        const result = await file.location;
-        console.log(result);
-        //사진경로가있는 주소를  imgurl이라는 이름으로 저장
-        res.status(200).json({ imgurl: result });
-    } catch (arr) {
-        res.send({ msg : "에러발생"});
+// router.post('/image', upload.single('imgUrl'), async (req, res) => {
+//     const file = await req.file;
+//     console.log(file);
+//     try {
+//         const result = await file.location;
+//         console.log(result);
+//         //사진경로가있는 주소를  imgurl이라는 이름으로 저장
+//         res.status(200).json({ imgurl: result });
+//     } catch (err) {
+//         res.send({ msg : "에러발생"});
         
-    }
-});
-
+//     }
+// });
 
 //게시글 생성(로그인시 가능)
-router.post('/boards', authMiddleWare, upload.single, async (req, res) => {
+router.post('/boards', authMiddleWare, upload.single('imgUrl'), async (req, res) => {
     try {
-        const {name} = res.locals.user;
+        const {name}  = res.locals.user;
         const maxBoardId = await Boards.findOne().sort("-boardId").exec()
+        const file = await req.file;
+        const result = await file.location;
         let boardId = 1
         if (maxBoardId) {
             boardId = maxBoardId.boardId+1
@@ -35,9 +36,9 @@ router.post('/boards', authMiddleWare, upload.single, async (req, res) => {
             name: name,
             title: req.body.title,
             content: req.body.content,
-            imgUrl: imgUrl
+            imgUrl: result
         });
-
+        console.log(createdBoards)
             res.json({ boards : createdBoards});  
     } catch (err) {
         res.status(400).send({
@@ -117,13 +118,10 @@ router.delete('/boards/:boardId', authMiddleWare, async (req, res) => {
          console.log(list.name)
          if ( user.name !== list.name) {
              await res.send({
-<<<<<<< HEAD
                 success: true,
                 boardId: boardId,
                 msg: "본인만 수정 가능합니다."
-=======
-                msg: "본인만 삭제 가능합니다."
->>>>>>> cca7c8cd0aceeaf35e5c7a89036a7201ef0f8811
+
              })
              return;
          }
