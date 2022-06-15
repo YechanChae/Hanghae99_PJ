@@ -2,9 +2,27 @@ const express = require("express")
 const Boards = require("../schemas/boards");
 const router = express.Router();
 const authMiddleWare = require('../middlewares/auth');
+const { upload } = require('../middlewares/upload')
+
+// 사진업로드 (1개씩 저장)
+
+router.post('/image', upload.single('imgUrl'), async (req, res) => {
+    const file = await req.file;
+    console.log(file);
+    try {
+        const result = await file.location;
+        console.log(result);
+        //사진경로가있는 주소를  imgurl이라는 이름으로 저장
+        res.status(200).json({ imgurl: result });
+    } catch (arr) {
+        res.send({ msg : "에러발생"});
+        
+    }
+});
+
 
 //게시글 생성(로그인시 가능)
-router.post('/boards', authMiddleWare, async (req, res) => {
+router.post('/boards', authMiddleWare, upload.single, async (req, res) => {
     try {
         const {name} = res.locals.user;
         const maxBoardId = await Boards.findOne().sort("-boardId").exec()
@@ -16,7 +34,8 @@ router.post('/boards', authMiddleWare, async (req, res) => {
             boardId: boardId,
             name: name,
             title: req.body.title,
-            content: req.body.content
+            content: req.body.content,
+            imgUrl: imgUrl
         });
 
             res.json({ boards : createdBoards});  
@@ -58,6 +77,8 @@ router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
         console.log(list.name)
         if ( user.name !== list.name) {
             await res.send({
+                success: true,
+                boardId : boardId,
                 msg: "본인만 수정 가능합니다."
             })
             return;
@@ -73,7 +94,6 @@ router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
             return;
         } 
     
-
     } catch (err) {
         res.json(400).send({
             msg: "게시글 수정 오류"
@@ -92,7 +112,9 @@ router.delete('/boards/:boardId', authMiddleWare, async (req, res) => {
          console.log(list.name)
          if ( user.name !== list.name) {
              await res.send({
-                 msg: "본인만 수정 가능합니다."
+                success: true,
+                boardId: boardId,
+                msg: "본인만 수정 가능합니다."
              })
              return;
          }
