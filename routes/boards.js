@@ -85,30 +85,6 @@ router.post('/boards', authMiddleWare, upload.single('imgUrl'), async (req, res)
     }
 });
 
-//게시글 생성(로그인시 가능)
-router.post('/boards', authMiddleWare, async (req, res) => {
-    try {
-        const {name} = res.locals.user;
-        const maxBoardId = await Boards.findOne().sort("-boardId").exec()
-        let boardId = 1
-        if (maxBoardId) {
-            boardId = maxBoardId.boardId+1
-        }
-        const createdBoards = await Boards.create({
-            boardId: Number(boardId),
-            name: name,
-            title: req.body.title,
-            content: req.body.content
-        });
-
-            res.json({ boards : createdBoards});  
-    } catch (err) {
-        res.status(400).send({
-            msg: "게시글 작성 오류"
-        })
-    }
-});
-
 //전체 게시글 조회(로그인 필요x)
 router.get('/boards', async (req, res) => {
     
