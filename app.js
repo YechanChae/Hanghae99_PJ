@@ -49,7 +49,7 @@ app.use(express.json())
 app.use("/api", [ BoardsRouter, commentRouter, usersRouter ]);
 
 app.get("/", (req, res) => {
-  res.send("Hi!");
+  res.send("Hi!!!!!");
 });
 
 // 서버 연결
