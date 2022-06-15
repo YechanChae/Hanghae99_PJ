@@ -3,6 +3,44 @@ const Boards = require("../schemas/boards");
 const router = express.Router();
 const authMiddleWare = require('../middlewares/auth');
 
+/** Schemas
+ * @swagger
+ * components:
+ *     schemas:
+ *        Board:
+ *          type: object
+ *          required:
+ *             - boardId
+ *             - name
+ *             - content
+ *             - title
+ *             - imgUrl
+ *             - likes
+ *          properties:
+ *              boardId:
+ *                  type: Number
+ *                  description: 게시물 아이디
+ *              name:
+ *                   type: string
+ *                   description: 게시물 작성자
+ *              content:
+ *                    type: string
+ *                    description: 게시물 내용
+ *              title:
+ *                    type: string
+ *                    description: 게시물 제목
+ *              likes:
+ *                    type: Array
+ *                    default: []
+ *                    description: 게시물 좋아요한 사람들 목록
+ *          example:
+ *              boardId: 1
+ *              name: jane
+ *              content: my pet is awesome
+ *              title: my pet
+ *              likes: [sophie, bob, ...]
+ */
+
 //게시글 생성(로그인시 가능)
 router.post('/boards', authMiddleWare, async (req, res) => {
     try {

@@ -5,6 +5,32 @@ const Joi = require("joi");
 const jwt = require('jsonwebtoken');
 const authMiddleWare = require('../middlewares/auth');
 
+/** Schemas
+ * @swagger
+ * components:
+ *     schemas:
+ *        User:
+ *          type: object
+ *          required:
+ *             - userId
+ *             - name
+ *             - password
+ *          properties:
+ *              userId:
+ *                  type: string
+ *                  description: 이용자의 이메일
+ *              name:
+ *                   type: string
+ *                   description: 이용자의 닉네임
+ *              password:
+ *                    type: string
+ *                    description: 이용자의 패스워드
+ *          example:
+ *              userId: jane@email.com
+ *              name: jane
+ *              password: 1234
+ */
+
 // 회원가입 검증하기
 const postUserSchema = Joi.object({
     userId: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] }}).required(),
@@ -17,11 +43,33 @@ const postUserSchema = Joi.object({
 const checkIdSchema = Joi.object({
     userId: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] }}).required()
 })
+
 //이름 중복체크 검증하기
 const checkNameSchema = Joi.object({
     name: Joi.string().pattern(new RegExp('^[ㄱ-ㅎ가-힣a-zA-Z0-9]{2,8}$')).required()
 })
 
+/**
+ * @swagger
+ * /api/login:
+ *  post:
+ *      tags: [SignUp/Login]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          userId:
+ *                              type: string
+ *                          password:
+ *                              type: string
+ *                                 
+ *      responses:
+ *          '':
+ *              description: This is the default response for it
+ */
 
 //로그인
 router.post("/login", async (req, res)=> {       //post메서드로 하는 이유는 로그인할 때 마다 마다 토큰을 생성하기때문
@@ -33,7 +81,7 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
         if (!user) {
             res.status(400).send({
                 success: false,
-                msg: "이메일 또는 패스워드를 확인해주세요."
+                msg: "이메일 또는 비밀번호를 확인해주세요."
             })
             return
         } else {
@@ -52,7 +100,7 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
             } else {
                 res.status(400).send({
                     success: false,
-                    msg: "이메일 또는 패스워드를 확인해주세요."
+                    msg: "이메일 또는 비밀번호를 확인해주세요."
                 })
             }
         }
@@ -63,6 +111,29 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
         })
     }
 })
+
+/**
+ * @swagger
+ * /api/check/userId:
+ *  post:
+ *      tags: [SignUp/Login]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          userId:
+ *                              type: string
+ *                          password:
+ *                              type: string
+ *                                 
+ *  
+ *      responses:
+ *          default:
+ *              description: This is the default response for it
+ */
 
 //이메일 중복확인
 router.post("/check/userId", async (req, res)=> {
@@ -88,6 +159,29 @@ router.post("/check/userId", async (req, res)=> {
         })
     }
 })
+
+/**
+ * @swagger
+ * /api/check/name:
+ *  post:
+ *      tags: [SignUp/Login]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          userId:
+ *                              type: string
+ *                          password:
+ *                              type: string
+ *                                 
+ *  
+ *      responses:
+ *          default:
+ *              description: This is the default response for it
+ */
 
 //이름 중복확인
 router.post("/check/name", async (req, res)=> {
@@ -115,6 +209,40 @@ router.post("/check/name", async (req, res)=> {
 })
 
 
+/**
+ * @swagger
+ * /api/users:
+ *  post:
+ *      tags: [SignUp/Login]
+ *      summary: 회원가입
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          userId:
+ *                              type: string
+ *                          name:
+ *                              type: string
+ *                          password:
+ *                              type: string
+ *                          confirmPassword:
+ *                              type: string
+ *                      example:
+ *                          userId: jane@email.com
+ *                          name: jane
+ *                          password: 1234
+ *                          confirmPassword: 1234
+ *                                 
+ *      responses:
+ *          '201':
+ *              'description': '회원가입을 환영합니다!'
+ *          '401':
+ *              'description': '비밀번호에 닉네임이 포함되어있습니다.'
+ */
+
 // 회원가입 API
 router.post("/users", async (req, res) => {
     try {
@@ -122,8 +250,12 @@ router.post("/users", async (req, res) => {
         // bcrypt 사용해 password 암호화
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+        const checkIdSchema = Joi.object({
+            userId: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] }}).required()
+        })
         
-        // 패스워드에 name 포함여부 확인
+        // 비밀번호에 name 포함여부 확인
         if (password.includes(name)) {
             res.status(400).send({
                 msg: "비밀번호에 닉네임이 포함되어있습니다."
@@ -131,10 +263,10 @@ router.post("/users", async (req, res) => {
             return;
         }
 
-        // 패스워드와 패스워드 확인란 동일 여부 확인
+        // 비밀번호와 비밀번호 확인란 동일 여부 확인
         if (password !== confirmPassword) {
             res.status(400).send({
-                msg: "패스워드가 패스워드 확인란과 동일하지 않습니다.",
+                msg: "비밀번호가 비밀번호 확인란과 동일하지 않습니다.",
             })
             return;
         }
@@ -172,9 +304,18 @@ router.post("/users", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/users/me:
+ *  get:
+ *      tags: [SignUp/Login]
+ *      summary: 회원정보 인증                               
+ *      responses:
+ *          content:
+ *              'application/json': {user: name}
+ */
 
 // 회원정보 인증
-
 router.get('/users/me', authMiddleWare, async function (req, res) {
     const { user } = res.locals;
     res.send({
@@ -184,8 +325,4 @@ router.get('/users/me', authMiddleWare, async function (req, res) {
     });
 });
 
-
 module.exports = router;
-
-
-
