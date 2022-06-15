@@ -31,7 +31,7 @@ router.post('/boards', authMiddleWare, upload.single, async (req, res) => {
             boardId = maxBoardId.boardId+1
         }
         const createdBoards = await Boards.create({
-            boardId: boardId,
+            boardId: Number(boardId),
             name: name,
             title: req.body.title,
             content: req.body.content,
@@ -73,8 +73,8 @@ router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
 
         const { user } = res.locals;
         const list = await Boards.findOne({ boardId });
-        console.log(user.name)
-        console.log(list.name)
+        console.log(`'이것은 username : ' ${user.name}`)
+        console.log(`'이것은 listname : ' ${list.name}`)
         if ( user.name !== list.name) {
             await res.send({
                 success: true,
@@ -90,12 +90,17 @@ router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
                 { boardId: Number(boardId)}, 
                 { $set: { title, content } }
             )
-            res.send({ success: true });
+            res.send({ 
+                success : true,
+                boardId : Number(boardId),
+                content,
+                title,
+            });
             return;
         } 
     
     } catch (err) {
-        res.json(400).send({
+        res.status(400).send({
             msg: "게시글 수정 오류"
         })
     }
@@ -112,9 +117,13 @@ router.delete('/boards/:boardId', authMiddleWare, async (req, res) => {
          console.log(list.name)
          if ( user.name !== list.name) {
              await res.send({
+<<<<<<< HEAD
                 success: true,
                 boardId: boardId,
                 msg: "본인만 수정 가능합니다."
+=======
+                msg: "본인만 삭제 가능합니다."
+>>>>>>> cca7c8cd0aceeaf35e5c7a89036a7201ef0f8811
              })
              return;
          }
@@ -123,11 +132,14 @@ router.delete('/boards/:boardId', authMiddleWare, async (req, res) => {
         if (isIdInBoard.length > 0) {
             await Boards.deleteOne({ boardId});
         }
-        res.send({ success: true });
+        res.send({ 
+            boardId : Number(boardId),
+            success: true
+        });
         return;
 
         } catch (err) {
-            res.json(400).send({
+            res.status(400).send({
                 msg: "게시글 삭제 오류"
             })
         }
