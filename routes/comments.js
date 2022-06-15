@@ -33,7 +33,7 @@ router.post('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
         
         const CreateComments = await Comment.create({ 
             boardId : Number(boardId),
-            commentId, 
+            commentId : Number(commentId),
             name: user.name, 
             comment 
         });
@@ -49,6 +49,7 @@ router.post('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
 router.put('/boards/:boardId/comments/:commentId', authMiddleWare, async (req, res) => {
     const user = res.locals.user;
     const commentId = req.params.commentId;
+    const boardId = req.params.boardId;
     const { comment } = req.body;
 
     const item = await Comment.findOne({ commentId: Number(commentId) });
@@ -56,7 +57,11 @@ router.put('/boards/:boardId/comments/:commentId', authMiddleWare, async (req, r
     console.log(item.name)
     if (user.name === item.name) {
         await Comment.updateOne({ commentId: Number(commentId) }, { $set: { comment } });
-        res.json({ success: true });
+        res.json({
+            commentId : Number(commentId),
+            boardId : Number(boardId),
+            comment,
+            success: true });
     } else {
         res.status(401).send({
             msg: "댓글 수정 권한이 없습니다."
@@ -66,18 +71,28 @@ router.put('/boards/:boardId/comments/:commentId', authMiddleWare, async (req, r
 
 // 댓글 삭제
 router.delete('/boards/:boardId/comments/:commentId', authMiddleWare, async (req, res) => {
-    const user = res.locals.user;
-    const commentId = req.params.commentId;
+    try{
+        const user = res.locals.user;
+        const commentId = req.params.commentId;
+        const boardId = req.params.boardId;           
+        const item = await Comment.findOne({ commentId: Number(commentId) });
 
-    const item = await Comment.findOne({ commentId: Number(commentId) });
-    if (user.name === item.name) {
-        await Comment.deleteOne({ commentId: Number(commentId) });
-        res.json({ success: true });
-    } else {
-        res.status(401).send({
-            msg: "댓글 삭제 권한이 없습니다."
-        })
+        if (user.name === item.name) {
+            await Comment.deleteOne({ commentId: Number(commentId) });
+             res.json({
+                commentId : Number(commentId),
+                boardId : Number(boardId),
+                success: true 
+            });
+            } else {
+                res.status(401).send({
+                    msg: "댓글 삭제 권한이 없습니다."
+                })
+            }
+    } catch (err) {
+        res.send({ msg : "오류!"})
     }
+    
 })
 
 module.exports = router;
