@@ -3,6 +3,75 @@ const Comment = require("../schemas/comments");
 const authMiddleWare = require('../middlewares/auth');
 const router = express.Router();
 
+/** Schemas
+ * @swagger
+ * components:
+ *     schemas:
+ *        Comment:
+ *          type: object
+ *          required:
+ *             - boardId
+ *             - commentId
+ *             - name
+ *             - comment
+ *          properties:
+ *              boardId:
+ *                  type: Number
+ *                  description: 게시물 아이디
+ *              commentId:
+ *                   type: Number
+ *                   description: 댓글 아이디
+ *              name:
+ *                    type: string
+ *                    description: 댓글 작성자
+ *              comment:
+ *                    type: string
+ *                    description: 댓글
+ *          example:
+ *              boardId: 1
+ *              commentId: 1
+ *              name: sophie
+ *              comment: your pet is very cute
+ */
+
+
+
+/**
+ * @swagger
+ * /api/boards/{boardId}/comments:
+ *  get:
+ *      tags: [Comment]
+ *      summary: 댓글 조회
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *        - name: token
+ *          in: header
+ *          description: 헤더에 토큰을 입력해주세요.
+ *        - name: boardId
+ *          in: path
+ *          type: string
+ *          required: true
+ *      responses:
+ *          200:
+ *              description: 조회 성공
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              boardId:
+ *                                  $ref: '#/components/schemas/Comment/boardId'
+ *                              name:
+ *                                  $ref: '#/components/schemas/Comment/name'
+ *                              comment:
+ *                                  $ref: '#/components/schemas/Comment/comment'
+ *                          example:
+ *                              boardId: 1
+ *                              name: sophie
+ *                              comment: awesome                         
+ */
+
 // 댓글 조회
 router.get('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
     const boardId = req.params.boardId;
@@ -10,6 +79,42 @@ router.get('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
     const comments = await Comment.find({ boardId: Number(boardId) });
     res.json({ comments: comments });
 })
+
+/**
+ * @swagger
+ * /api/boards/{boardId}/comments:
+ *  post:
+ *      tags: [Comment]
+ *      summary: 댓글 작성
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *        - name: token
+ *          in: header
+ *          description: 헤더에 토큰을 입력해주세요.
+ *        - name: boardId
+ *          in: path
+ *          type: string
+ *          required: true
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          comment:
+ *                              $ref: '#/components/schemas/Comment/comment'
+ *                      example:
+ *                          comment: good
+ *                                 
+ *  
+ *      responses:
+ *          200:
+ *              description: 댓글 작성 완료
+ *          400:
+ *              description: 댓글 작성 오류
+ */
 
 // 댓글 작성
 router.post('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
@@ -45,6 +150,46 @@ router.post('/boards/:boardId/comments', authMiddleWare, async (req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * /api/boards/{boardId}/comments/{commentId}:
+ *  put:
+ *      tags: [Comment]
+ *      summary: 댓글 수정
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *        - name: token
+ *          in: header
+ *          description: 헤더에 토큰을 입력해주세요.
+ *        - name: boardId
+ *          in: path
+ *          type: string
+ *          required: true
+ *        - name: commentId
+ *          in: path
+ *          type: string
+ *          required: true
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          comment:
+ *                              type: string
+ *                      example:
+ *                           comment: modify
+ *                                 
+ *  
+ *      responses:
+ *          200:
+ *              description: 댓글 수정 완료
+ *          401:
+ *              description: 댓글 수정 권한 없음
+ */
+
 // 댓글 수정
 router.put('/boards/:boardId/comments/:commentId', authMiddleWare, async (req, res) => {
     const user = res.locals.user;
@@ -68,6 +213,34 @@ router.put('/boards/:boardId/comments/:commentId', authMiddleWare, async (req, r
         })
     }
 })
+
+/**
+ * @swagger
+ * /api/boards/{boardId}/comments/{commendId}:
+ *  delete:
+ *      tags: [Comment]
+ *      summary: 댓글 삭제
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *        - name: token
+ *          in: header
+ *          description: 헤더에 토큰을 입력해주세요.
+ *        - name: boardId
+ *          in: path
+ *          type: string
+ *          required: true
+ *        - name: commentId
+ *          in: path
+ *          type: string
+ *          required: true                         
+ *  
+ *      responses:
+ *          200:
+ *              description: 댓글 삭제 완료
+ *          401:
+ *              description: 댓글 삭제 권한 없음
+ */
 
 // 댓글 삭제
 router.delete('/boards/:boardId/comments/:commentId', authMiddleWare, async (req, res) => {

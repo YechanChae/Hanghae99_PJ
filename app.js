@@ -29,6 +29,7 @@ const options = {
     openapi: '3.0.1',
     info: {
       title: 'API in Swagger',
+      description: '쇼미더펫',
       version: '1.0.01'
     },
     servers: [
