@@ -3,6 +3,7 @@ const Boards = require("../schemas/boards");
 const router = express.Router();
 const authMiddleWare = require('../middlewares/auth');
 const { upload } = require('../middlewares/upload')
+const moment = require('moment');
 
 /** Schemas
  * @swagger
@@ -30,6 +31,9 @@ const { upload } = require('../middlewares/upload')
  *              title:
  *                    type: string
  *                    description: 게시물 제목
+ *              imgUrl:
+ *                    type: string
+ *                    description: 게시물 사진
  *              likes:
  *                    type: Array
  *                    default: []
@@ -58,13 +62,51 @@ const { upload } = require('../middlewares/upload')
 //     }
 // });
 
+/**
+ * @swagger
+ * /api/boards:
+ *  post:
+ *      tags: [Board]
+ *      summary: 게시글 작성
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *        - name: token
+ *          in: header
+ *          description: 헤더에 토큰을 입력해주세요.
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          title:
+ *                              type: string
+ *                          content:
+ *                              type: string
+ *                      example:
+ *                          title: my pet
+ *                          content: my pet
+ *                                 
+ *  
+ *      responses:
+ *          200:
+ *              description: 게시글 작성 완료
+ *          400:
+ *              description: 게시글 작성 오류
+ */
+
 //게시글 생성(로그인시 가능)
 router.post('/boards', authMiddleWare, upload.single('imgUrl'), async (req, res) => {
     try {
         const {name}  = res.locals.user;
+        const date = moment().add('9','h').format('YYYY-MM-DD HH:mm:ss');
         const maxBoardId = await Boards.findOne().sort("-boardId").exec()
         const file = await req.file;
+        console.log("작동2")
         const result = await file.location;
+        console.log("작동3")
         let boardId = 1
         if (maxBoardId) {
             boardId = maxBoardId.boardId+1
@@ -74,7 +116,8 @@ router.post('/boards', authMiddleWare, upload.single('imgUrl'), async (req, res)
             name: name,
             title: req.body.title,
             content: req.body.content,
-            imgUrl: result
+            imgUrl: result,
+            date: date.split(' ')[0],
         });
         console.log(createdBoards)
             res.json({ boards : createdBoards});  
@@ -85,6 +128,38 @@ router.post('/boards', authMiddleWare, upload.single('imgUrl'), async (req, res)
     }
 });
 
+/**
+ * @swagger
+ * /api/boards:
+ *  get:
+ *      tags: [Board]
+ *      summary: 게시글 전체조회
+ *      responses:
+ *          200:
+ *              description: 조회 성공
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              boardId:
+ *                                  $ref: '#/components/schemas/Board/boardId'
+ *                              name:
+ *                                  $ref: '#/components/schemas/Board/name'
+ *                              title:
+ *                                  $ref: '#/components/schemas/Board/title'
+ *                              content:
+ *                                  $ref: '#/components/schemas/Board/content'
+ *                              imgUrl:
+ *                                  $ref: '#/components/schemas/Board/imgUrl'
+ *                          example:
+ *                              boardId: 1
+ *                              name: jane
+ *                              title: my pet
+ *                              content: my pet is awesome
+ *                              imgUrl: 'http://---'                              
+ */
+
 //전체 게시글 조회(로그인 필요x)
 router.get('/boards', async (req, res) => {
     
@@ -94,6 +169,48 @@ router.get('/boards', async (req, res) => {
         boards,
     });
 });
+
+/**
+ * @swagger
+ * /api/boards/{boardId}:
+ *  get:
+ *      tags: [Board]
+ *      summary: 게시글 상세조회
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *        - name: token
+ *          in: header
+ *          description: 헤더에 토큰을 입력해주세요.
+ *        - name: boardId
+ *          in: path
+ *          type: string
+ *          required: true
+ *      responses:
+ *          200:
+ *              description: 조회 성공
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              boardId:
+ *                                  $ref: '#/components/schemas/Board/boardId'
+ *                              name:
+ *                                  $ref: '#/components/schemas/Board/name'
+ *                              title:
+ *                                  $ref: '#/components/schemas/Board/title'
+ *                              content:
+ *                                  $ref: '#/components/schemas/Board/content'
+ *                              imgUrl:
+ *                                  $ref: '#/components/schemas/Board/imgUrl'
+ *                          example:
+ *                              boardId: 1
+ *                              name: jane
+ *                              title: my pet
+ *                              content: my pet is awesome
+ *                              imgUrl: 'http://---'                                 
+ */
 
 //게시글 상세조회
 router.get('/boards/:boardId', authMiddleWare, async (req, res) => {
@@ -118,8 +235,66 @@ router.get('/boards/:boardId', authMiddleWare, async (req, res) => {
     
 });
 
-//게시글 수정(로그인 필요)
+/**
+ * @swagger
+ * /api/boards/{boardId}:
+ *  put:
+ *      tags: [Board]
+ *      summary: 게시글 수정
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *        - name: token
+ *          in: header
+ *          description: 헤더에 토큰을 입력해주세요.
+ *        - name: boardId
+ *          in: path
+ *          type: string
+ *          required: true
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          title:
+ *                              type: string
+ *                          content:
+ *                              type: string
+ *                          imgUrl:
+ *                              type: string
+ *                      example:
+ *                          title: modify
+ *                          content: modify
+ *                          imgUrl: http://~~
+ *                                 
+ *      responses:
+ *         200:
+ *             description: 게시물 수정 완료
+ *             content:
+ *                 application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              boardId:
+ *                                  $ref: '#/components/schemas/Board/boardId'
+ *                              title:
+ *                                  $ref: '#/components/schemas/Board/title'
+ *                              content:
+ *                                  $ref: '#/components/schemas/Board/content'
+ *                              imgUrl:
+ *                                  $ref: '#/components/schemas/Board/imgUrl'
+ *                          example:
+ *                              boardId: 1
+ *                              title: modify
+ *                              content: modify
+ *                              imgUrl: http://~~
+ *             400:
+ *                  description: 게시물 수정 오류          
+ */
 
+//게시글 수정(로그인 필요)
 router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
     try {
         const { boardId } = req.params;
@@ -161,6 +336,39 @@ router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
    
 });
 
+/**
+ * @swagger
+ * /api/boards/{boardId}:
+ *  delete:
+ *      tags: [Board]
+ *      summary: 게시글 삭제
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *        - name: token
+ *          in: header
+ *          description: 헤더에 토큰을 입력해주세요.
+ *        - name: boardId
+ *          in: path
+ *          type: string
+ *          required: true         
+ *  
+ *      responses:
+ *          200:
+ *              description: 게시글 삭제 완료
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              boardId:
+ *                                  $ref: '#/components/schemas/Board/boardId'
+ *                      example:
+ *                          boardId: 1
+ *          400:
+ *              description: 게시글 삭제 오류
+ */
+
 //게시글 삭제(로그인 필요)
 router.delete('/boards/:boardId', authMiddleWare, async (req, res) => {
     try {
@@ -194,6 +402,30 @@ router.delete('/boards/:boardId', authMiddleWare, async (req, res) => {
         }
        
 });
+
+/**
+ * @swagger
+ * /api/boards/{boardId}/like:
+ *  put:
+ *      tags: [Board]
+ *      summary: 게시글 좋아요
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *        - name: token
+ *          in: header
+ *          description: 헤더에 토큰을 입력해주세요.
+ *        - name: boardId
+ *          in: path
+ *          type: string
+ *          required: true
+ *  
+ *      responses:
+ *          201:
+ *              description: 좋아요 추가 or 취소
+ *          500:
+ *              description: 오류 발생
+ */
 
 // 게시글 좋아요 기능
 router.put('/boards/:boardId/like', authMiddleWare, async (req, res) => {

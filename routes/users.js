@@ -54,6 +54,7 @@ const checkNameSchema = Joi.object({
  * /api/login:
  *  post:
  *      tags: [SignUp/Login]
+ *      summary: 로그인
  *      requestBody:
  *          required: true
  *          content:
@@ -65,10 +66,15 @@ const checkNameSchema = Joi.object({
  *                              type: string
  *                          password:
  *                              type: string
+ *                      example:
+ *                          userId: jane@email.com
+ *                          password: 1234
  *                                 
  *      responses:
- *          '':
- *              description: This is the default response for it
+ *          200:
+ *              description: 로그인 성공
+ *          400:
+ *              description: 로그인 실패
  */
 
 //로그인
@@ -117,6 +123,7 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
  * /api/check/userId:
  *  post:
  *      tags: [SignUp/Login]
+ *      summary: 이메일 중복확인
  *      requestBody:
  *          required: true
  *          content:
@@ -126,13 +133,15 @@ router.post("/login", async (req, res)=> {       //post메서드로 하는 이�
  *                      properties:
  *                          userId:
  *                              type: string
- *                          password:
- *                              type: string
+ *                      example:
+ *                          userId: jane@email.com
  *                                 
  *  
  *      responses:
- *          default:
- *              description: This is the default response for it
+ *          200:
+ *              description: 사용가능한 이메일
+ *          400:
+ *              description: 이미 존재하는 이메일
  */
 
 //이메일 중복확인
@@ -165,6 +174,7 @@ router.post("/check/userId", async (req, res)=> {
  * /api/check/name:
  *  post:
  *      tags: [SignUp/Login]
+ *      summary: 닉네임 중복확인
  *      requestBody:
  *          required: true
  *          content:
@@ -172,15 +182,17 @@ router.post("/check/userId", async (req, res)=> {
  *                  schema:
  *                      type: object
  *                      properties:
- *                          userId:
+ *                          name:
  *                              type: string
- *                          password:
- *                              type: string
+ *                      example:
+ *                          name: jane
  *                                 
  *  
  *      responses:
- *          default:
- *              description: This is the default response for it
+ *          200:
+ *              description: 사용가능한 닉네임
+ *          400:
+ *              description: 이미 존재하는 닉네임
  */
 
 //이름 중복확인
@@ -237,10 +249,10 @@ router.post("/check/name", async (req, res)=> {
  *                          confirmPassword: 1234
  *                                 
  *      responses:
- *          '201':
- *              'description': '회원가입을 환영합니다!'
- *          '401':
- *              'description': '비밀번호에 닉네임이 포함되어있습니다.'
+ *          201:
+ *              description: 회원가입 성공
+ *          400:
+ *              description: 회원가입 실패
  */
 
 // 회원가입 API
@@ -309,10 +321,23 @@ router.post("/users", async (req, res) => {
  * /api/users/me:
  *  get:
  *      tags: [SignUp/Login]
- *      summary: 회원정보 인증                               
+ *      summary: 회원정보 인증
+ *      security:
+ *          - bearerAuth: []
+ *      parameters:
+ *        - name: token
+ *          in: header
+ *          description: 헤더에 토큰을 입력해주세요.                               
  *      responses:
- *          content:
- *              'application/json': {user: name}
+ *          200:
+ *              description: 회원정보 인증 OK
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              name:
+ *                                  $ref: '#/components/schemas/User/name'      
  */
 
 // 회원정보 인증

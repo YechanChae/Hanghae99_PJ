@@ -24,8 +24,8 @@ const boardsSchema = new mongoose.Schema({
         default: [],
     },
     date: {
-        type : Date,
-    }
+        type: String,
+    },
 })
 
 module.exports = mongoose.model("Board", boardsSchema);
