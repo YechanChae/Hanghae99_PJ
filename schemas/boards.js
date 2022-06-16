@@ -22,9 +22,10 @@ const boardsSchema = new mongoose.Schema({
     likes: {
         type: Array,
         default: [],
-    }
     },
-    { timestamps: true }
-)
+    date: {
+        type: String,
+    },
+})
 
 module.exports = mongoose.model("Board", boardsSchema);

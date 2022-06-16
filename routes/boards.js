@@ -3,6 +3,7 @@ const Boards = require("../schemas/boards");
 const router = express.Router();
 const authMiddleWare = require('../middlewares/auth');
 const { upload } = require('../middlewares/upload')
+const moment = require('moment');
 
 /** Schemas
  * @swagger
@@ -100,9 +101,12 @@ const { upload } = require('../middlewares/upload')
 router.post('/boards', authMiddleWare, upload.single('imgUrl'), async (req, res) => {
     try {
         const {name}  = res.locals.user;
+        const date = moment().add('9','h').format('YYYY-MM-DD HH:mm:ss');
         const maxBoardId = await Boards.findOne().sort("-boardId").exec()
         const file = await req.file;
+        console.log("작동2")
         const result = await file.location;
+        console.log("작동3")
         let boardId = 1
         if (maxBoardId) {
             boardId = maxBoardId.boardId+1
@@ -112,7 +116,8 @@ router.post('/boards', authMiddleWare, upload.single('imgUrl'), async (req, res)
             name: name,
             title: req.body.title,
             content: req.body.content,
-            imgUrl: result
+            imgUrl: result,
+            date: date.split(' ')[0],
         });
         console.log(createdBoards)
             res.json({ boards : createdBoards});  
