@@ -30,7 +30,6 @@
 - 댓글 수정 기능
 - 댓글 삭제 기능
 - swagger 추가
-- 댓글 삭제 기능
 
 ## 📖 API 설계 명세서
 https://www.notion.so/SA-1-b7e7381627244f518ae98ef2e36871cd
