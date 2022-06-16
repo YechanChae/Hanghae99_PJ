@@ -4,7 +4,7 @@ const authMiddleWare = require('../middlewares/auth');
 const router = express.Router();
 
 /** Schemas
- * @swagger∂
+ * @swagger
  * components:
  *     schemas:
  *        Comment:
