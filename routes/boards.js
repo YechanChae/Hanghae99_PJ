@@ -88,7 +88,7 @@ router.post('/boards', authMiddleWare, upload.single('imgUrl'), async (req, res)
 //전체 게시글 조회(로그인 필요x)
 router.get('/boards', async (req, res) => {
     
-    const boards = await Boards.find({}, { boardId : 1, name: 1, title: 1, content: 1});
+    const boards = await Boards.find({}, { boardId : 1, name: 1, title: 1, content: 1, imgUrl: 1});
     console.log(boards)
     res.json({
         boards,
@@ -97,10 +97,25 @@ router.get('/boards', async (req, res) => {
 
 //게시글 상세조회
 router.get('/boards/:boardId', authMiddleWare, async (req, res) => {
-    const { boardId } = req.params;
+    try {
+        const { boardId } = req.params;
+        const { user } = res.locals;
+        const [detail] = await Boards.find({ boardId: Number(boardId) });
 
-    const [detail] = await Boards.find({ boardId: Number(boardId) }) 
-    res.json({detail});
+        if (user.name !== detail.name) {
+            await res.send({
+                msg : "게시글 수정 권한이 없습니다.",
+            })
+            return;
+        }
+        res.json({detail});
+        
+    } catch (err) {
+        res.status(400).send({
+            msg: "게시글 상세조회 오류"
+        })
+    }
+    
 });
 
 //게시글 수정(로그인 필요)
@@ -128,6 +143,7 @@ router.put('/boards/:boardId', authMiddleWare, async (req, res) => {
                 { $set: { title, content } }
             )
             res.send({ 
+                msg : "게시글이 수정되었습니다.",
                 success : true,
                 boardId : Number(boardId),
                 content,
@@ -165,6 +181,7 @@ router.delete('/boards/:boardId', authMiddleWare, async (req, res) => {
             await Boards.deleteOne({ boardId});
         }
         res.send({ 
+            msg: "게시글이 삭제되었습니다.",
             boardId : Number(boardId),
             success: true
         });
